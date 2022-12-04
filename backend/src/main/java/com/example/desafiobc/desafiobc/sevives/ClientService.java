@@ -1,9 +1,8 @@
 package com.example.desafiobc.desafiobc.sevives;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +18,26 @@ public class ClientService {
 	private ClientRepository repository;
 
 	@Transactional(readOnly = true)
-	public List<ClientDTO> findAll() {
-		List<Client> list = repository.findAll();
-		return list.stream().map(x -> new ClientDTO(x)).collect(Collectors.toList());
-		
+	public Page<ClientDTO> findAll(Pageable pageable) {
+		Page<Client> list = repository.findAll(pageable);
+		return list.map(x-> new ClientDTO(x));		
 	}
+	
+	
+	
+	@Transactional(readOnly = true)
+	public ClientDTO findById(Long id){
+		Client client = repository.findById(id).get();		
+		return new ClientDTO(client);		
+	}
+
+
+	@Transactional
+	public ClientDTO insert(ClientDTO dto) {
+		Client entity = new Client();
+		entity = repository.save(entity);
+		return new ClientDTO(entity);
+	}
+	
 
 }
