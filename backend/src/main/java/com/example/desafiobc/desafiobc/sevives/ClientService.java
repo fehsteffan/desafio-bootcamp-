@@ -28,7 +28,7 @@ public class ClientService {
 	
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id){		
-		Client entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recourse not found"));			
+		Client entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resourse not found"));			
 		return new ClientDTO(entity);	
 			
 						
@@ -46,11 +46,13 @@ public class ClientService {
 
 
 	@Transactional
-	public ClientDTO update(Long id, ClientDTO dto) {
-		Client entity = repository.getReferenceById(id);		
-		copyDtoToEntity(dto, entity);		
-		entity = repository.save(entity);
-		return new ClientDTO(entity);
+	public ClientDTO update(Long id, ClientDTO dto) {		
+			Client entity = repository.getReferenceById(id);		
+			copyDtoToEntity(dto, entity);		
+			entity = repository.save(entity);
+			return new ClientDTO(entity);	
+	
+		
 	}
 	
 	
