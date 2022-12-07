@@ -1,6 +1,9 @@
 package com.example.desafiobc.desafiobc.sevives;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +22,7 @@ public class ClientService {
 	private ClientRepository repository;
 
 	@Transactional(readOnly = true)
-	public Page<ClientDTO> findAll(Pageable pageable) {
+	public Page<ClientDTO> findAllPaged(Pageable pageable) {
 		Page<Client> list = repository.findAll(pageable);
 		return list.map(x-> new ClientDTO(x));		
 	}
@@ -46,20 +49,32 @@ public class ClientService {
 
 
 	@Transactional
-	public ClientDTO update(Long id, ClientDTO dto) {		
+	public ClientDTO update(Long id, ClientDTO dto) {	
+		try {
 			Client entity = repository.getReferenceById(id);		
 			copyDtoToEntity(dto, entity);		
 			entity = repository.save(entity);
-			return new ClientDTO(entity);	
-	
+			return new ClientDTO(entity);		
+						
+		}
+		catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Resource not found");
+			
+		}
 		
 	}
 	
 	
 	@Transactional
 	public void delete(Long id) {
-		repository.deleteById(id);
-		
+		try {
+			
+			repository.deleteById(id);
+		}
+		catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException("Resource not found");
+			
+		}		
 		 
 	}
 
